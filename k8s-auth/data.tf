@@ -13,11 +13,3 @@ data "vault_policy_document" "reader_policy" {
     description = "allow reading secrets from myproject applications"
   }
 }
-
-data "vault_policy_document" "cicd_policy" {
-  rule {
-    path = "secrets/myproject/*"
-    capabilities = ["create", "read", "update", "delete", "list"]
-    description = "allow create/delete permission to myproject ci/cd platform"
-  }
-}

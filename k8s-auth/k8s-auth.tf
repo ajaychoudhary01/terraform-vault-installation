@@ -27,11 +27,6 @@ resource "vault_policy" "reader_policy" {
   policy = data.vault_policy_document.reader_policy.hcl
 }
 
-resource "vault_policy" "cicd_policy" {
-  name = "cicd"
-  policy = data.vault_policy_document.cicd_policy.hcl
-}
-
 resource "vault_auth_backend" "kubernetes" {
   type = "kubernetes"
 }
@@ -43,11 +38,12 @@ resource "vault_kubernetes_auth_backend_config" "config" {
   token_reviewer_jwt = data.kubernetes_secret.vault_auth_sa.data.token
 }
 
+#Create multiple roles for each application with access to application specific policy so that application won't be able to access other applications secrets
 resource "vault_kubernetes_auth_backend_role" "role" {
   backend = "kubernetes"
   role_name = "app-reader"
   bound_service_account_names = [kubernetes_service_account.vault_auth.metadata.0.name]
-  bound_service_account_namespaces = ["*"] # Allow for all namespaces
+  bound_service_account_namespaces = ["*"] # Allow for all namespaces, try to use specific namespace here
   token_ttl = 43200 //1 day
   token_policies = [vault_policy.reader_policy.name]
 }

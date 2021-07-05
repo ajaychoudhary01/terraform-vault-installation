@@ -7,6 +7,6 @@ locals {
 
   vault_values = {
     "server.ha.enabled"  = true
-    "server.ha.replicas" = 1
+    "server.ha.replicas" = 1 # Keep this higher for higher availabilty
   }
 }

@@ -1,6 +1,6 @@
 resource "kubernetes_service_account" "app" {
   metadata {
-    name      = "vault-app-test"
+    name      = "vault-auth"
     namespace =  kubernetes_namespace.app.metadata[0].name
   }
 
@@ -15,10 +15,10 @@ resource "kubernetes_namespace" "app" {
 
 resource "kubernetes_deployment" "example" {
   metadata {
-    name = "vault-app-test"
+    name = "vault-test-app"
     namespace = kubernetes_namespace.app.metadata[0].name
     labels = {
-      name = "vault-app-test"
+      name = "vault-test-app"
     }
   }
 
@@ -27,18 +27,18 @@ resource "kubernetes_deployment" "example" {
 
     selector {
       match_labels = {
-        name = "vault-app-test"
+        name = "vault-test-app"
       }
     }
 
     template {
       metadata {
         labels = {
-          name = "vault-app-test"
+          name = "vault-test-app"
         }
         annotations = {
           "vault.hashicorp.com/agent-inject": "true"
-          "vault.hashicorp.com/agent-inject-secrets-mydbpassword": "secrets/myproject/mydbpassword"
+          "vault.hashicorp.com/agent-inject-secret-mydbpassword": "secrets/myproject/dbpassword"
           "vault.hashicorp.com/role": "app-reader"
         }
       }
@@ -47,7 +47,7 @@ resource "kubernetes_deployment" "example" {
         service_account_name = kubernetes_service_account.app.metadata[0].name
         container {
           image = "nginx:1.7.8"
-          name  = "vault-app-test"
+          name  = "vault-test-app"
         }
       }
     }
